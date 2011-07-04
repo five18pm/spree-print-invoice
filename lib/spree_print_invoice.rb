@@ -9,22 +9,7 @@ module PrintInvoice
     def self.activate
       Admin::OrdersController.class_eval do
         respond_to :html, :pdf
-        respond_override :show => { :html => { :success => lambda do
-          template = params[:template] || "invoice"
-          render :template => "admin/orders/#{template}"  , :filename => "#{@order.number}.pdf", 
-                 :layout => false, :content_type => "application/pdf", :type => :erb
-          end
-        }}
-
-        def method_missing(method, *args, &block)
-          puts "missing #{method} has pdf=#{@pdf=!nil} args=#{args.length}"
-          @pdf.respond_to?(method) ? @pdf.send(method, *args, &block) : super
-        end
-      end
-
-      OrdersController.class_eval do
-        respond_to :html, :pdf
-        respond_override :show => { :html => { :success => lambda do
+        respond_override :show => { :pdf => { :success => lambda do
           template = params[:template] || "invoice"
           render :template => "admin/orders/#{template}"  , :filename => "#{@order.number}.pdf", 
                  :layout => false, :content_type => "application/pdf", :type => :erb
